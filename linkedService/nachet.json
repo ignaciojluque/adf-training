@@ -1,0 +1,11 @@
+{
+	"name": "nachet",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://nachet-kv.vault.azure.net/"
+		}
+	}
+}

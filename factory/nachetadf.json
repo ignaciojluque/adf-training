@@ -1,0 +1,9 @@
+{
+	"name": "nachetadf",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "d0222226-87e7-48f0-a5bf-37b2da979c22",
+		"tenantId": "ed2ca867-ccd0-4bf8-8dc2-955e759132cf"
+	}
+}
