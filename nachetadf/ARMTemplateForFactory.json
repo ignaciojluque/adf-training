@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "nachetadf"
 		},
+		"AzureDatabricks_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'AzureDatabricks'"
+		},
 		"DestinationContainer_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'DestinationContainer'"
@@ -14,6 +18,10 @@
 		"nachetblob_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'nachetblob'"
+		},
+		"AzureDatabricks_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "0622-191115-5fjn2jne"
 		},
 		"AzureSqlDatabase1_properties_typeProperties_connectionString_secretName": {
 			"type": "string",
@@ -188,6 +196,38 @@
 								"parameters": {}
 							}
 						]
+					},
+					{
+						"name": "LabNotebook",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "Copy_ffx",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/ignaciojluque@hotmail.com/03-Data-Ingestion-Via-ADF/includes/Databricks-Data-Transformations",
+							"baseParameters": {
+								"accountName": "nachetblob",
+								"accountKey": "OiTNoHNAkGJP8RhfHIdAOmHoIGSqlPeutuY1fA7KfpXgll83Q0RmfBpb8cqk1imOWCaPtGCtHnTz+AStJhOXYQ==",
+								"containerName": "dwtemp"
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks",
+							"type": "LinkedServiceReference"
+						}
 					}
 				],
 				"policy": {
@@ -198,7 +238,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/SourceDataset_ffx')]",
-				"[concat(variables('factoryId'), '/datasets/DestinationDataset_ffx')]"
+				"[concat(variables('factoryId'), '/datasets/DestinationDataset_ffx')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureDatabricks')]"
 			]
 		},
 		{
@@ -947,6 +988,24 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/nachetblob')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDatabricks')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://adb-3810147186997996.16.azuredatabricks.net",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDatabricks_accessToken')]"
+					},
+					"existingClusterId": "[parameters('AzureDatabricks_properties_typeProperties_existingClusterId')]"
+				}
+			},
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/AzureSqlDatabase1')]",

@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "nachetadf"
 		},
+		"AzureDatabricks_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'AzureDatabricks'"
+		},
 		"DestinationContainer_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'DestinationContainer'"
@@ -14,6 +18,10 @@
 		"nachetblob_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'nachetblob'"
+		},
+		"AzureDatabricks_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "0622-191115-5fjn2jne"
 		},
 		"PublicDataSet_sasUri": {
 			"type": "secureString",
@@ -32,6 +40,24 @@
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDatabricks')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://adb-3810147186997996.16.azuredatabricks.net",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDatabricks_accessToken')]"
+					},
+					"existingClusterId": "[parameters('AzureDatabricks_properties_typeProperties_existingClusterId')]"
+				}
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/DestinationContainer')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
@@ -956,6 +982,38 @@
 								"parameters": {}
 							}
 						]
+					},
+					{
+						"name": "LabNotebook",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "Copy_ffx",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/ignaciojluque@hotmail.com/03-Data-Ingestion-Via-ADF/includes/Databricks-Data-Transformations",
+							"baseParameters": {
+								"accountName": "nachetblob",
+								"accountKey": "OiTNoHNAkGJP8RhfHIdAOmHoIGSqlPeutuY1fA7KfpXgll83Q0RmfBpb8cqk1imOWCaPtGCtHnTz+AStJhOXYQ==",
+								"containerName": "dwtemp"
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks",
+							"type": "LinkedServiceReference"
+						}
 					}
 				],
 				"policy": {
@@ -966,7 +1024,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/SourceDataset_ffx')]",
-				"[concat(variables('factoryId'), '/datasets/DestinationDataset_ffx')]"
+				"[concat(variables('factoryId'), '/datasets/DestinationDataset_ffx')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureDatabricks')]"
 			]
 		},
 		{
@@ -1261,59 +1320,6 @@
 				"[concat(variables('factoryId'), '/datasets/Minervas')]",
 				"[concat(variables('factoryId'), '/datasets/ReadersBooksInnerJoin')]",
 				"[concat(variables('factoryId'), '/datasets/ReadersBooksOuterJoin')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/plRunBookReadingDataflow')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Run BookREading Flow",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "BookReading",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"BooksCSV": {},
-									"TrixiesHistory": {},
-									"svens": {},
-									"keikos": {},
-									"minervas": {},
-									"ReadersBooksInnerJoin": {},
-									"ReadersBooksInnerJoin2": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"annotations": [],
-				"lastPublishTime": "2023-06-21T17:25:07Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/BookReading')]"
 			]
 		}
 	]

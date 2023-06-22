@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "nachetadf"
 		},
+		"AzureDatabricks_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'AzureDatabricks'"
+		},
 		"DestinationContainer_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'DestinationContainer'"
@@ -14,6 +18,10 @@
 		"nachetblob_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'nachetblob'"
+		},
+		"AzureDatabricks_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "0622-191115-5fjn2jne"
 		},
 		"AzureSqlDatabase1_properties_typeProperties_connectionString_secretName": {
 			"type": "string",
@@ -54,11 +62,17 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"AzureDatabricks_accessToken": {
+						"value": "[parameters('AzureDatabricks_accessToken')]"
+					},
 					"DestinationContainer_connectionString": {
 						"value": "[parameters('DestinationContainer_connectionString')]"
 					},
 					"nachetblob_connectionString": {
 						"value": "[parameters('nachetblob_connectionString')]"
+					},
+					"AzureDatabricks_properties_typeProperties_existingClusterId": {
+						"value": "[parameters('AzureDatabricks_properties_typeProperties_existingClusterId')]"
 					},
 					"PublicDataSet_sasUri": {
 						"value": "[parameters('PublicDataSet_sasUri')]"
@@ -72,6 +86,26 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "nachetadf_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'nachetadf_ArmTemplate_0')]"
+			]
 		}
 	]
 }

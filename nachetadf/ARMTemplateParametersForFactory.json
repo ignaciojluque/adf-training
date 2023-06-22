@@ -5,11 +5,17 @@
 		"factoryName": {
 			"value": "nachetadf"
 		},
+		"AzureDatabricks_accessToken": {
+			"value": ""
+		},
 		"DestinationContainer_connectionString": {
 			"value": ""
 		},
 		"nachetblob_connectionString": {
 			"value": ""
+		},
+		"AzureDatabricks_properties_typeProperties_existingClusterId": {
+			"value": "0622-191115-5fjn2jne"
 		},
 		"AzureSqlDatabase1_properties_typeProperties_connectionString_secretName": {
 			"value": "sqlConnString"
