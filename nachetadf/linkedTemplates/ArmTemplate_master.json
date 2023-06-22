@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "nachetadf"
 		},
+		"DestinationContainer_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'DestinationContainer'"
+		},
 		"nachetblob_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'nachetblob'"
@@ -14,6 +18,10 @@
 		"AzureSqlDatabase1_properties_typeProperties_connectionString_secretName": {
 			"type": "string",
 			"defaultValue": "sqlConnString"
+		},
+		"PublicDataSet_sasUri": {
+			"type": "secureString",
+			"metadata": "Secure string for 'sasUri' of 'PublicDataSet'"
 		},
 		"nachet_properties_typeProperties_baseUrl": {
 			"type": "string",
@@ -46,8 +54,14 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"DestinationContainer_connectionString": {
+						"value": "[parameters('DestinationContainer_connectionString')]"
+					},
 					"nachetblob_connectionString": {
 						"value": "[parameters('nachetblob_connectionString')]"
+					},
+					"PublicDataSet_sasUri": {
+						"value": "[parameters('PublicDataSet_sasUri')]"
 					},
 					"nachet_properties_typeProperties_baseUrl": {
 						"value": "[parameters('nachet_properties_typeProperties_baseUrl')]"

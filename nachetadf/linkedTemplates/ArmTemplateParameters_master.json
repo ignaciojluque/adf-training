@@ -5,11 +5,17 @@
 		"factoryName": {
 			"value": "nachetadf"
 		},
+		"DestinationContainer_connectionString": {
+			"value": ""
+		},
 		"nachetblob_connectionString": {
 			"value": ""
 		},
 		"AzureSqlDatabase1_properties_typeProperties_connectionString_secretName": {
 			"value": "sqlConnString"
+		},
+		"PublicDataSet_sasUri": {
+			"value": ""
 		},
 		"nachet_properties_typeProperties_baseUrl": {
 			"value": "https://nachet-kv.vault.azure.net/"
