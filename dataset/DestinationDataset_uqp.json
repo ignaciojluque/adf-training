@@ -1,0 +1,24 @@
+{
+	"name": "DestinationDataset_uqp",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "nachetblob",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "book_listing_csv",
+				"folderPath": "output/booklist",
+				"container": "adftutorial"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
