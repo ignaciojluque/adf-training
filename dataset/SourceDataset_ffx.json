@@ -1,0 +1,18 @@
+{
+	"name": "SourceDataset_ffx",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "PublicDataSet",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "crime-data-2016",
+				"container": "training"
+			}
+		}
+	}
+}
