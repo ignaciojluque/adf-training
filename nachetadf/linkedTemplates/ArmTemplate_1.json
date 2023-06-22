@@ -13,6 +13,396 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/BookReading')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "bookscsv",
+								"type": "DatasetReference"
+							},
+							"name": "BooksCSV"
+						},
+						{
+							"dataset": {
+								"referenceName": "trixies",
+								"type": "DatasetReference"
+							},
+							"name": "TrixiesHistory"
+						},
+						{
+							"dataset": {
+								"referenceName": "svens",
+								"type": "DatasetReference"
+							},
+							"name": "svens"
+						},
+						{
+							"dataset": {
+								"referenceName": "keikos",
+								"type": "DatasetReference"
+							},
+							"name": "keikos"
+						},
+						{
+							"dataset": {
+								"referenceName": "Minervas",
+								"type": "DatasetReference"
+							},
+							"name": "minervas"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ReadersBooksInnerJoin",
+								"type": "DatasetReference"
+							},
+							"name": "ReadersBooksInnerJoin"
+						},
+						{
+							"dataset": {
+								"referenceName": "ReadersBooksOuterJoin",
+								"type": "DatasetReference"
+							},
+							"name": "ReadersBooksInnerJoin2"
+						}
+					],
+					"transformations": [
+						{
+							"name": "AddReaderNameT"
+						},
+						{
+							"name": "AddReaderNameS"
+						},
+						{
+							"name": "AddReaderNameK"
+						},
+						{
+							"name": "AddReaderM"
+						},
+						{
+							"name": "AllReaders"
+						},
+						{
+							"name": "SortReadingHistory"
+						},
+						{
+							"name": "JoinReaderstoBooks"
+						},
+						{
+							"name": "RemoveDuplicatedColumns"
+						},
+						{
+							"name": "JoinReaderstoBooksOuter"
+						},
+						{
+							"name": "RemoveDuplicatedColumns2"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Book_Id as integer '##0',",
+						"          ISBN as string,",
+						"          ISBN13 as string,",
+						"          Title as string,",
+						"          Author as string,",
+						"          {Author_l-f} as string,",
+						"          Additional_Authors as string,",
+						"          Average_Rating as float '0.00',",
+						"          Publisher as string,",
+						"          Binding as string,",
+						"          Number_of_Pages as integer '##0',",
+						"          Year_Published as integer '##0',",
+						"          Original_Publication_Year as integer '##0'",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> BooksCSV",
+						"source(output(",
+						"          Book_Id as integer '##0',",
+						"          ISBN as string,",
+						"          ISBN13 as string,",
+						"          My_Rating as integer '##0',",
+						"          Date_Read as date 'dd/MM/yyyy',",
+						"          Date_Added as date 'dd/MM/yyyy',",
+						"          Bookshelves as string,",
+						"          Exclusive_Shelf as string,",
+						"          My_Review as string,",
+						"          Spoiler as boolean,",
+						"          Private_Notes as string,",
+						"          Read_Count as integer '##0',",
+						"          Original_Purchase_Date as date 'dd/MM/yyyy'",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> TrixiesHistory",
+						"source(output(",
+						"          Book_Id as integer '##0',",
+						"          ISBN as string,",
+						"          ISBN13 as string,",
+						"          My_Rating as integer '##0',",
+						"          Date_Read as date 'dd/MM/yyyy',",
+						"          Date_Added as date 'dd/MM/yyyy',",
+						"          Original_Purchase_Date as date 'dd/MM/yyyy',",
+						"          Spoiler as boolean,",
+						"          Bookshelves as string,",
+						"          Exclusive_Shelf as string,",
+						"          Private_Notes as string,",
+						"          Read_Count as integer '##0',",
+						"          My_Review as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> svens",
+						"source(output(",
+						"          Book_Id as integer '##0',",
+						"          ISBN as string,",
+						"          ISBN13 as string,",
+						"          My_Rating as integer '##0',",
+						"          Date_Read as date 'dd/MM/yyyy',",
+						"          Date_Added as date 'dd/MM/yyyy',",
+						"          Bookshelves as string,",
+						"          Exclusive_Shelf as string,",
+						"          My_Review as string,",
+						"          Spoiler as boolean,",
+						"          Read_Count as integer '##0',",
+						"          Original_Purchase_Date as date 'dd/MM/yyyy'",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> keikos",
+						"source(output(",
+						"          Book_Id as integer '##0',",
+						"          ISBN as string,",
+						"          My_Rating as integer '##0',",
+						"          Date_Read as date 'dd/MM/yyyy',",
+						"          Date_Added as date 'dd/MM/yyyy',",
+						"          Bookshelves as string,",
+						"          Exclusive_Shelf as string,",
+						"          My_Review as string,",
+						"          Spoiler as boolean,",
+						"          Private_Notes as string,",
+						"          Read_Count as integer '##0',",
+						"          Original_Purchase_Date as date 'dd/MM/yyyy'",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> minervas",
+						"TrixiesHistory derive(Reader = \"Trixie Belden\") ~> AddReaderNameT",
+						"svens derive(Reader = \"Sven Dorjadt\") ~> AddReaderNameS",
+						"keikos derive(Reader = \"Keiko Brooks\") ~> AddReaderNameK",
+						"minervas derive(Reader = \"Minerva Snape\") ~> AddReaderM",
+						"AddReaderNameT, AddReaderNameK, AddReaderM, AddReaderNameS union(byName: true)~> AllReaders",
+						"AllReaders sort(asc(Book_Id, true)) ~> SortReadingHistory",
+						"SortReadingHistory, BooksCSV join(AllReaders@ISBN == BooksCSV@ISBN",
+						"     && AllReaders@Book_Id == BooksCSV@Book_Id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> JoinReaderstoBooks",
+						"JoinReaderstoBooks select(mapColumn(",
+						"          Book_Id = AllReaders@Book_Id,",
+						"          ISBN = AllReaders@ISBN,",
+						"          ISBN13 = AllReaders@ISBN13,",
+						"          My_Rating,",
+						"          Date_Read,",
+						"          Date_Added,",
+						"          Bookshelves,",
+						"          Exclusive_Shelf,",
+						"          My_Review,",
+						"          Spoiler,",
+						"          Private_Notes,",
+						"          Read_Count,",
+						"          Original_Purchase_Date,",
+						"          Reader,",
+						"          Title,",
+						"          Author,",
+						"          {Author_l-f},",
+						"          Additional_Authors,",
+						"          Average_Rating,",
+						"          Publisher,",
+						"          Binding,",
+						"          Number_of_Pages,",
+						"          Year_Published,",
+						"          Original_Publication_Year",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> RemoveDuplicatedColumns",
+						"BooksCSV, SortReadingHistory join(BooksCSV@Book_Id == AllReaders@Book_Id",
+						"     && BooksCSV@ISBN == AllReaders@ISBN,",
+						"     joinType:'right',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> JoinReaderstoBooksOuter",
+						"JoinReaderstoBooksOuter select(mapColumn(",
+						"          Title,",
+						"          Author,",
+						"          {Author_l-f},",
+						"          Additional_Authors,",
+						"          Average_Rating,",
+						"          Publisher,",
+						"          Binding,",
+						"          Number_of_Pages,",
+						"          Year_Published,",
+						"          Original_Publication_Year,",
+						"          Book_Id = AllReaders@Book_Id,",
+						"          ISBN = AllReaders@ISBN,",
+						"          ISBN13 = AllReaders@ISBN13,",
+						"          My_Rating,",
+						"          Date_Read,",
+						"          Date_Added,",
+						"          Bookshelves,",
+						"          Exclusive_Shelf,",
+						"          My_Review,",
+						"          Spoiler,",
+						"          Private_Notes,",
+						"          Read_Count,",
+						"          Original_Purchase_Date,",
+						"          Reader",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> RemoveDuplicatedColumns2",
+						"RemoveDuplicatedColumns sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          Book_Id as string,",
+						"          ISBN as string,",
+						"          ISBN13 as string,",
+						"          My_Rating as string,",
+						"          Date_Read as string,",
+						"          Date_Added as string,",
+						"          Bookshelves as string,",
+						"          Exclusive_Shelf as string,",
+						"          My_Review as string,",
+						"          Spoiler as string,",
+						"          Read_Count as string,",
+						"          Original_Purchase_Date as string",
+						"     ),",
+						"     partitionFileNames:['InnerJoinDataset.csv'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> ReadersBooksInnerJoin",
+						"RemoveDuplicatedColumns2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['ReaderBooksOuterJoin.csv'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> ReadersBooksInnerJoin2"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ProductStaging')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "StagingID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ProductID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ProductNumber",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Color",
+						"type": "nvarchar"
+					},
+					{
+						"name": "StandardCost",
+						"type": "money",
+						"precision": 19,
+						"scale": 4
+					},
+					{
+						"name": "ListPrice",
+						"type": "money",
+						"precision": 19,
+						"scale": 4
+					},
+					{
+						"name": "Size",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Weight",
+						"type": "decimal",
+						"precision": 8,
+						"scale": 2
+					},
+					{
+						"name": "ProductCategoryID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ProductModelID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SellStartDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SellEndDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "DiscontinuedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ThumbNailPhoto",
+						"type": "varbinary"
+					},
+					{
+						"name": "ThumbnailPhotoFileName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "rowguid",
+						"type": "uniqueidentifier"
+					}
+				],
+				"typeProperties": {
+					"schema": "SalesLT",
+					"table": "ProductStaging"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/plRunBookReadingDataflow')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -61,7 +451,279 @@
 				"annotations": [],
 				"lastPublishTime": "2023-06-21T17:25:07Z"
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/BookReading')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "import CSV",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "ProductID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ProductID",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "Name",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Name",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ProductNumber",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ProductNumber",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Color",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Color",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "StandardCost",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "StandardCost",
+											"type": "Decimal",
+											"physicalType": "money",
+											"scale": 4,
+											"precision": 19
+										}
+									},
+									{
+										"source": {
+											"name": "ListPrice",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ListPrice",
+											"type": "Decimal",
+											"physicalType": "money",
+											"scale": 4,
+											"precision": 19
+										}
+									},
+									{
+										"source": {
+											"name": "Size",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Size",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Weight",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Weight",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 2,
+											"precision": 8
+										}
+									},
+									{
+										"source": {
+											"name": "ProductCategoryID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ProductCategoryID",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "ProductModelID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ProductModelID",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "SellStartDate",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "SellStartDate",
+											"type": "DateTime",
+											"physicalType": "datetime"
+										}
+									},
+									{
+										"source": {
+											"name": "SellEndDate",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "SellEndDate",
+											"type": "DateTime",
+											"physicalType": "datetime"
+										}
+									},
+									{
+										"source": {
+											"name": "DiscontinuedDate",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "DiscontinuedDate",
+											"type": "DateTime",
+											"physicalType": "datetime"
+										}
+									},
+									{
+										"source": {
+											"name": "ThumbNailPhoto",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ThumbNailPhoto",
+											"type": "Byte[]",
+											"physicalType": "varbinary"
+										}
+									},
+									{
+										"source": {
+											"name": "ThumbnailPhotoFileName",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ThumbnailPhotoFileName",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "rowguid",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "rowguid",
+											"type": "Guid",
+											"physicalType": "uniqueidentifier"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ProductsCSV",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ProductStaging",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ProductStaging')]"
+			]
 		}
 	]
 }

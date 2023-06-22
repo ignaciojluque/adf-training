@@ -827,6 +827,104 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ProductsCSV')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "nachetblob",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Products.csv",
+						"folderPath": "csv",
+						"container": "m03-l02-lab01"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "ProductID",
+						"type": "String"
+					},
+					{
+						"name": "Name",
+						"type": "String"
+					},
+					{
+						"name": "ProductNumber",
+						"type": "String"
+					},
+					{
+						"name": "Color",
+						"type": "String"
+					},
+					{
+						"name": "StandardCost",
+						"type": "String"
+					},
+					{
+						"name": "ListPrice",
+						"type": "String"
+					},
+					{
+						"name": "Size",
+						"type": "String"
+					},
+					{
+						"name": "Weight",
+						"type": "String"
+					},
+					{
+						"name": "ProductCategoryID",
+						"type": "String"
+					},
+					{
+						"name": "ProductModelID",
+						"type": "String"
+					},
+					{
+						"name": "SellStartDate",
+						"type": "String"
+					},
+					{
+						"name": "SellEndDate",
+						"type": "String"
+					},
+					{
+						"name": "DiscontinuedDate",
+						"type": "String"
+					},
+					{
+						"name": "ThumbNailPhoto",
+						"type": "String"
+					},
+					{
+						"name": "ThumbnailPhotoFileName",
+						"type": "String"
+					},
+					{
+						"name": "rowguid",
+						"type": "String"
+					},
+					{
+						"name": "(No column name)",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/nachetblob')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/CopyBookListing')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1026,300 +1124,6 @@
 				"[concat(variables('factoryId'), '/datasets/SourceDataset_ffx')]",
 				"[concat(variables('factoryId'), '/datasets/DestinationDataset_ffx')]",
 				"[concat(variables('factoryId'), '/linkedServices/AzureDatabricks')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/BookReading')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "bookscsv",
-								"type": "DatasetReference"
-							},
-							"name": "BooksCSV"
-						},
-						{
-							"dataset": {
-								"referenceName": "trixies",
-								"type": "DatasetReference"
-							},
-							"name": "TrixiesHistory"
-						},
-						{
-							"dataset": {
-								"referenceName": "svens",
-								"type": "DatasetReference"
-							},
-							"name": "svens"
-						},
-						{
-							"dataset": {
-								"referenceName": "keikos",
-								"type": "DatasetReference"
-							},
-							"name": "keikos"
-						},
-						{
-							"dataset": {
-								"referenceName": "Minervas",
-								"type": "DatasetReference"
-							},
-							"name": "minervas"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "ReadersBooksInnerJoin",
-								"type": "DatasetReference"
-							},
-							"name": "ReadersBooksInnerJoin"
-						},
-						{
-							"dataset": {
-								"referenceName": "ReadersBooksOuterJoin",
-								"type": "DatasetReference"
-							},
-							"name": "ReadersBooksInnerJoin2"
-						}
-					],
-					"transformations": [
-						{
-							"name": "AddReaderNameT"
-						},
-						{
-							"name": "AddReaderNameS"
-						},
-						{
-							"name": "AddReaderNameK"
-						},
-						{
-							"name": "AddReaderM"
-						},
-						{
-							"name": "AllReaders"
-						},
-						{
-							"name": "SortReadingHistory"
-						},
-						{
-							"name": "JoinReaderstoBooks"
-						},
-						{
-							"name": "RemoveDuplicatedColumns"
-						},
-						{
-							"name": "JoinReaderstoBooksOuter"
-						},
-						{
-							"name": "RemoveDuplicatedColumns2"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          Book_Id as integer '##0',",
-						"          ISBN as string,",
-						"          ISBN13 as string,",
-						"          Title as string,",
-						"          Author as string,",
-						"          {Author_l-f} as string,",
-						"          Additional_Authors as string,",
-						"          Average_Rating as float '0.00',",
-						"          Publisher as string,",
-						"          Binding as string,",
-						"          Number_of_Pages as integer '##0',",
-						"          Year_Published as integer '##0',",
-						"          Original_Publication_Year as integer '##0'",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> BooksCSV",
-						"source(output(",
-						"          Book_Id as integer '##0',",
-						"          ISBN as string,",
-						"          ISBN13 as string,",
-						"          My_Rating as integer '##0',",
-						"          Date_Read as date 'dd/MM/yyyy',",
-						"          Date_Added as date 'dd/MM/yyyy',",
-						"          Bookshelves as string,",
-						"          Exclusive_Shelf as string,",
-						"          My_Review as string,",
-						"          Spoiler as boolean,",
-						"          Private_Notes as string,",
-						"          Read_Count as integer '##0',",
-						"          Original_Purchase_Date as date 'dd/MM/yyyy'",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> TrixiesHistory",
-						"source(output(",
-						"          Book_Id as integer '##0',",
-						"          ISBN as string,",
-						"          ISBN13 as string,",
-						"          My_Rating as integer '##0',",
-						"          Date_Read as date 'dd/MM/yyyy',",
-						"          Date_Added as date 'dd/MM/yyyy',",
-						"          Original_Purchase_Date as date 'dd/MM/yyyy',",
-						"          Spoiler as boolean,",
-						"          Bookshelves as string,",
-						"          Exclusive_Shelf as string,",
-						"          Private_Notes as string,",
-						"          Read_Count as integer '##0',",
-						"          My_Review as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> svens",
-						"source(output(",
-						"          Book_Id as integer '##0',",
-						"          ISBN as string,",
-						"          ISBN13 as string,",
-						"          My_Rating as integer '##0',",
-						"          Date_Read as date 'dd/MM/yyyy',",
-						"          Date_Added as date 'dd/MM/yyyy',",
-						"          Bookshelves as string,",
-						"          Exclusive_Shelf as string,",
-						"          My_Review as string,",
-						"          Spoiler as boolean,",
-						"          Read_Count as integer '##0',",
-						"          Original_Purchase_Date as date 'dd/MM/yyyy'",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> keikos",
-						"source(output(",
-						"          Book_Id as integer '##0',",
-						"          ISBN as string,",
-						"          My_Rating as integer '##0',",
-						"          Date_Read as date 'dd/MM/yyyy',",
-						"          Date_Added as date 'dd/MM/yyyy',",
-						"          Bookshelves as string,",
-						"          Exclusive_Shelf as string,",
-						"          My_Review as string,",
-						"          Spoiler as boolean,",
-						"          Private_Notes as string,",
-						"          Read_Count as integer '##0',",
-						"          Original_Purchase_Date as date 'dd/MM/yyyy'",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> minervas",
-						"TrixiesHistory derive(Reader = \"Trixie Belden\") ~> AddReaderNameT",
-						"svens derive(Reader = \"Sven Dorjadt\") ~> AddReaderNameS",
-						"keikos derive(Reader = \"Keiko Brooks\") ~> AddReaderNameK",
-						"minervas derive(Reader = \"Minerva Snape\") ~> AddReaderM",
-						"AddReaderNameT, AddReaderNameK, AddReaderM, AddReaderNameS union(byName: true)~> AllReaders",
-						"AllReaders sort(asc(Book_Id, true)) ~> SortReadingHistory",
-						"SortReadingHistory, BooksCSV join(AllReaders@ISBN == BooksCSV@ISBN",
-						"     && AllReaders@Book_Id == BooksCSV@Book_Id,",
-						"     joinType:'inner',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> JoinReaderstoBooks",
-						"JoinReaderstoBooks select(mapColumn(",
-						"          Book_Id = AllReaders@Book_Id,",
-						"          ISBN = AllReaders@ISBN,",
-						"          ISBN13 = AllReaders@ISBN13,",
-						"          My_Rating,",
-						"          Date_Read,",
-						"          Date_Added,",
-						"          Bookshelves,",
-						"          Exclusive_Shelf,",
-						"          My_Review,",
-						"          Spoiler,",
-						"          Private_Notes,",
-						"          Read_Count,",
-						"          Original_Purchase_Date,",
-						"          Reader,",
-						"          Title,",
-						"          Author,",
-						"          {Author_l-f},",
-						"          Additional_Authors,",
-						"          Average_Rating,",
-						"          Publisher,",
-						"          Binding,",
-						"          Number_of_Pages,",
-						"          Year_Published,",
-						"          Original_Publication_Year",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> RemoveDuplicatedColumns",
-						"BooksCSV, SortReadingHistory join(BooksCSV@Book_Id == AllReaders@Book_Id",
-						"     && BooksCSV@ISBN == AllReaders@ISBN,",
-						"     joinType:'right',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> JoinReaderstoBooksOuter",
-						"JoinReaderstoBooksOuter select(mapColumn(",
-						"          Title,",
-						"          Author,",
-						"          {Author_l-f},",
-						"          Additional_Authors,",
-						"          Average_Rating,",
-						"          Publisher,",
-						"          Binding,",
-						"          Number_of_Pages,",
-						"          Year_Published,",
-						"          Original_Publication_Year,",
-						"          Book_Id = AllReaders@Book_Id,",
-						"          ISBN = AllReaders@ISBN,",
-						"          ISBN13 = AllReaders@ISBN13,",
-						"          My_Rating,",
-						"          Date_Read,",
-						"          Date_Added,",
-						"          Bookshelves,",
-						"          Exclusive_Shelf,",
-						"          My_Review,",
-						"          Spoiler,",
-						"          Private_Notes,",
-						"          Read_Count,",
-						"          Original_Purchase_Date,",
-						"          Reader",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> RemoveDuplicatedColumns2",
-						"RemoveDuplicatedColumns sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          Book_Id as string,",
-						"          ISBN as string,",
-						"          ISBN13 as string,",
-						"          My_Rating as string,",
-						"          Date_Read as string,",
-						"          Date_Added as string,",
-						"          Bookshelves as string,",
-						"          Exclusive_Shelf as string,",
-						"          My_Review as string,",
-						"          Spoiler as string,",
-						"          Read_Count as string,",
-						"          Original_Purchase_Date as string",
-						"     ),",
-						"     partitionFileNames:['InnerJoinDataset.csv'],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> ReadersBooksInnerJoin",
-						"RemoveDuplicatedColumns2 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     partitionFileNames:['ReaderBooksOuterJoin.csv'],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> ReadersBooksInnerJoin2"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/bookscsv')]",
-				"[concat(variables('factoryId'), '/datasets/trixies')]",
-				"[concat(variables('factoryId'), '/datasets/svens')]",
-				"[concat(variables('factoryId'), '/datasets/keikos')]",
-				"[concat(variables('factoryId'), '/datasets/Minervas')]",
-				"[concat(variables('factoryId'), '/datasets/ReadersBooksInnerJoin')]",
-				"[concat(variables('factoryId'), '/datasets/ReadersBooksOuterJoin')]"
 			]
 		}
 	]
