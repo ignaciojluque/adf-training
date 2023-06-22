@@ -61,6 +61,38 @@
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "LabNotebook",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "Copy_ffx",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/ignaciojluque@hotmail.com/03-Data-Ingestion-Via-ADF/includes/Databricks-Data-Transformations",
+					"baseParameters": {
+						"accountName": "nachetblob",
+						"accountKey": "OiTNoHNAkGJP8RhfHIdAOmHoIGSqlPeutuY1fA7KfpXgll83Q0RmfBpb8cqk1imOWCaPtGCtHnTz+AStJhOXYQ==",
+						"containerName": "dwtemp"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricks",
+					"type": "LinkedServiceReference"
+				}
 			}
 		],
 		"annotations": []
